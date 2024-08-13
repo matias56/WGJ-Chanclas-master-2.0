@@ -14,10 +14,13 @@ public class Door : MonoBehaviour
     private Vector3 openPosition;
     private bool isOpen = false;
 
+    private AudioSource audioSource;
+
     void Start()
     {
         closedPosition = transform.position;
         openPosition = closedPosition + openPositionOffset;
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -44,7 +47,8 @@ public class Door : MonoBehaviour
     {
         isOpen = true;
         // Optionally, disable the collider or other components here
-        GetComponent<Collider2D>().enabled = false;
+        //GetComponent<Collider2D>().enabled = false;
+        audioSource.Play();
     }
 
     public void SetHasKey(bool value)
