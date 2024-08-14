@@ -48,9 +48,9 @@ public class Ihne : MonoBehaviour
 
     private bool isPlayerProtected = false;
 
-    public float timer = 7;
+    public float timer = 5;
 
-    public float initTime = 7;
+    public float initTime = 5;
 
     public bool hasStone;
 
@@ -71,21 +71,6 @@ public class Ihne : MonoBehaviour
     private float dashingTime = 0.2f;
     private float dashingCooldown = 1f;
 
-    public AudioSource au;
-
-    public AudioClip[] footstepSounds; // Array to hold footstep sound clips
-    public float footstepInterval = 0.5f; // Time between footsteps
-    private float footstepTimer;
-
-    public AudioClip dash;
-
-    public AudioClip tel;
-
-    public AudioClip o;
-
-    public AudioClip tt;
-
-
     // Start is called before the first frame update
     void Start()
     {
@@ -102,7 +87,7 @@ public class Ihne : MonoBehaviour
 
         hasStone = false;
 
-        au = GetComponent<AudioSource>();
+
        
 
         isSton = false;
@@ -122,10 +107,10 @@ public class Ihne : MonoBehaviour
 
         horizontal = Input.GetAxisRaw("Horizontal");
 
-        if (onT && Input.GetKeyDown(KeyCode.Q) && !isPlayerProtected)
+        if (onT && Input.GetKeyDown(KeyCode.Q))
         {
+           
 
-            au.PlayOneShot(tt);
             l.SetActive(true);
 
             isPlayerProtected = true;
@@ -190,8 +175,6 @@ public class Ihne : MonoBehaviour
         {
             StartCoroutine(Dashing());
         }
-
-     
     }
 
     private void FixedUpdate()
@@ -205,32 +188,8 @@ public class Ihne : MonoBehaviour
         rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
 
         bool isWalking = Mathf.Abs(horizontal) > 0;
-
-        if (rb.velocity.x != 0 && IsGrounded())
-        {
-            footstepTimer -= Time.deltaTime;
-            if (footstepTimer <= 0)
-            {
-                PlayFootstepSound();
-                footstepTimer = footstepInterval;
-            }
-        }
-        else
-        {
-            footstepTimer = 0; // Reset timer when not walking
-
-        }
     }
 
-
-    void PlayFootstepSound()
-    {
-        if (footstepSounds.Length > 0)
-        {
-            int index = Random.Range(0, footstepSounds.Length);
-            au.PlayOneShot(footstepSounds[index]);
-        }
-    }
     public bool IsGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
@@ -320,26 +279,30 @@ public class Ihne : MonoBehaviour
         if(other.CompareTag("OiTr"))
         {
             oi.SetActive(true);
-            au.PlayOneShot(o);
             ft.TriggerDialogue("oi");
             Destroy(other.gameObject);
         }
 
-     
-        if (other.CompareTag("Loop") && hasStone)
+        if (other.CompareTag("AddDash"))
         {
-
-            Teleport();
-            ft.TriggerDialogue("end");
+            
+            ft.TriggerDialogue("dash");
+            Destroy(other.gameObject);
         }
 
-
-        if (other.CompareTag("LVS"))
+        if (other.CompareTag("Loop"))
         {
 
-
-            ft.TriggerDialogue("lv");
+            ft.TriggerDialogue("end");
             Destroy(other);
+            speed = 0;
+        }
+
+        if (other.CompareTag("Key"))
+        {
+
+            
+            Teleport();
         }
     }
 
@@ -388,7 +351,6 @@ public class Ihne : MonoBehaviour
 
     void Teleport()
     {
-        au.PlayOneShot(tel);
         this.transform.position = startP.transform.position;
     }
 
@@ -399,7 +361,6 @@ public class Ihne : MonoBehaviour
         float originalGravity = rb.gravityScale;
         rb.gravityScale = 0f;
         rb.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
-        au.PlayOneShot(dash);
         tr.emitting = true;
         yield return new WaitForSeconds(dashingTime);
         tr.emitting = false;
