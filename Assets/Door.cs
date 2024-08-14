@@ -13,6 +13,8 @@ public class Door : MonoBehaviour
     private Vector3 closedPosition;
     private Vector3 openPosition;
     private bool isOpen = false;
+    public AudioSource au;
+    public AudioClip op;
 
     void Start()
     {
@@ -42,6 +44,7 @@ public class Door : MonoBehaviour
 
     public void OpenDoor()
     {
+        au.PlayOneShot(op);
         isOpen = true;
         // Optionally, disable the collider or other components here
         GetComponent<Collider2D>().enabled = false;

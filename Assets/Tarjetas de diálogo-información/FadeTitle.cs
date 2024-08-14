@@ -2,14 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class FadeTitle : MonoBehaviour
 {
-    public Image img;
-
+  
     public Ihne ihne;
 
-    
+    public AnimSprite ihneS;
+
+    public GameObject[] lv;
+
+
 
     public GameObject[] death;
 
@@ -21,9 +25,6 @@ public class FadeTitle : MonoBehaviour
 
     private GameObject[] currentDialogue; // Reference to the current active dialogue array
 
-
-    public GameObject[] das;
-
     public GameObject[] end;
 
     public bool isOi;
@@ -32,10 +33,15 @@ public class FadeTitle : MonoBehaviour
 
     public bool isS;
 
-    public bool dash;
-
 
     public bool en;
+
+    public bool lvs;
+
+
+    public Rigidbody2D rb;   // Reference to the player's Rigidbody2D
+
+    private Vector2 savedVelocity;         // Store the player's velocity before the dialogue
     // Start is called before the first frame update
     void Start()
     {
@@ -43,9 +49,10 @@ public class FadeTitle : MonoBehaviour
 
         ihne.enabled = false;
 
-       
 
-  
+        ihneS = GetComponent<AnimSprite>();
+
+        rb = GetComponent<Rigidbody2D>();
 
         for (var i = 0; i < death.Length; i++)
         {
@@ -67,11 +74,7 @@ public class FadeTitle : MonoBehaviour
                 return;
         }
 
-        for (var i = 0; i < das.Length; i++)
-        {
-            if (das[i] == null)
-                return;
-        }
+       
 
 
         for (var i = 0; i < end.Length; i++)
@@ -80,14 +83,21 @@ public class FadeTitle : MonoBehaviour
                 return;
         }
 
+        for (var i = 0; i < lv.Length; i++)
+        {
+            if (lv[i] == null)
+                return;
+        }
+
+
+       
+
         // Ensure all dialogue cards are inactive at the start
+        DeactivateAllDialogues(lv);
         DeactivateAllDialogues(death);
         DeactivateAllDialogues(tor);
         DeactivateAllDialogues(stone);
-        DeactivateAllDialogues(das);
         DeactivateAllDialogues(end);
-
-
 
 
     }
@@ -98,12 +108,7 @@ public class FadeTitle : MonoBehaviour
 
        
 
-        if(Input.GetKeyDown(KeyCode.Return))
-        {
-            Fade();
-            ihne.enabled = true;
-        }
-
+     
 
         if (Input.GetKeyDown(KeyCode.Return) && currentDialogue != null && currentDialogue[currentCardIndex].activeSelf)
         {
@@ -122,9 +127,34 @@ public class FadeTitle : MonoBehaviour
 
     public void TriggerDialogue(string type)
     {
+        if (rb != null)
+        {
+            savedVelocity = rb.velocity;
+            rb.velocity = Vector2.zero; // Stop any ongoing movement
+        }
+
+        if (ihne != null)
+        {
+            ihne.enabled = false;
+        }
+
+        if (ihneS != null)
+        {
+            ihneS.dis = true;
+            ihneS.OnDisable();
+        }
+
+
+       
+        
+
         // Set the current dialogue array based on the trigger type
         switch (type)
         {
+            case "lv":
+                currentDialogue = lv;
+                break;
+           
             case "death":
                 currentDialogue = death;
                 break;
@@ -134,9 +164,7 @@ public class FadeTitle : MonoBehaviour
             case "st":
                 currentDialogue = stone;
                 break;
-            case "dash":
-                currentDialogue = das;
-                break;
+           
             case "end":
                 currentDialogue = end;
                 break;
@@ -166,10 +194,7 @@ public class FadeTitle : MonoBehaviour
         }
 
     }
-    void Fade()
-    {
-        img.CrossFadeAlpha(0, 2, true);
-    }
+ 
 
 
     void ShowNextDialogueCard()
@@ -199,6 +224,15 @@ public class FadeTitle : MonoBehaviour
 
     void DialogueSequenceComplete()
     {
+        if (currentDialogue == end)
+        {
+            // Scene transition
+            SceneManager.LoadScene("3"); // Replace "3" with your actual scene name or index
+        }
+        ihne.enabled = true;
+        rb.velocity = savedVelocity;
+        ihneS.OnEnable();
+        ihneS.dis = false;
         // Optional: perform any additional actions when all dialogues in the current section are complete
         Debug.Log("Dialogue section complete.");
         currentDialogue = null; // Reset to indicate no active dialogue
