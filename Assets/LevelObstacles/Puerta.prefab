@@ -131,3 +131,4 @@ MonoBehaviour:
   openPositionOffset: {x: 0, y: -4, z: 0}
   openSpeed: 2
   hasKey: 0
+  dr: {fileID: 8300000, guid: d090173836a522e43a33ea6abbb6d01d, type: 3}

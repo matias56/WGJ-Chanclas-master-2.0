@@ -15,6 +15,7 @@ public class Door : MonoBehaviour
     private bool isOpen = false;
 
     private AudioSource audioSource;
+    public AudioClip dr;
 
     void Start()
     {
@@ -46,9 +47,7 @@ public class Door : MonoBehaviour
     public void OpenDoor()
     {
         isOpen = true;
-        // Optionally, disable the collider or other components here
-        //GetComponent<Collider2D>().enabled = false;
-        audioSource.Play();
+        audioSource.PlayOneShot(dr);
     }
 
     public void SetHasKey(bool value)

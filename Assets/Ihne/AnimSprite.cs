@@ -11,6 +11,7 @@ public class AnimSprite : MonoBehaviour
 
     private int frame;
 
+    public bool dis;
     // Start is called before the first frame update
     void Awake()
     {
@@ -23,14 +24,18 @@ public class AnimSprite : MonoBehaviour
         
     }
 
-    private void OnEnable()
+    public void OnEnable()
     {
-        InvokeRepeating(nameof(Animate), frameRate, frameRate);
+        if (!dis)
+        {
+            InvokeRepeating(nameof(Animate), frameRate, frameRate);
+        }
+
     }
 
-    private void OnDisable()
+    public void OnDisable()
     {
-        CancelInvoke();
+        CancelInvoke(nameof(Animate));
     }
 
     private void Animate()

@@ -15,6 +15,7 @@ TagManager:
   - OiTr
   - AddDash
   - Loop
+  - LV
   layers:
   - Default
   - TransparentFX
